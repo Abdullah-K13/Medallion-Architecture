@@ -38,6 +38,10 @@ This project demonstrates a **real-time data pipeline** using **Medallion Archit
 - Aggregated and business-ready data tailored for each use case.
 - Optimized for analytics and reporting.
 
+## Architectire Diagram
+![kafka drawio](https://github.com/user-attachments/assets/037832c9-82ac-4799-a478-06802f90778e)
+
+
 ## 🎯 Key Features
 ✅ **Fully Automated Kafka Server Management** with **GitHub Actions & Docker Compose**.  
 ✅ **High-Velocity Real-Time Data Processing**, handling thousands of transactions per second.  
@@ -60,7 +64,7 @@ This project demonstrates a **real-time data pipeline** using **Medallion Archit
 ## 🚀 How to Run the Project
 ### 1️⃣ **Clone the Repository**
 ```sh
- git clone https://github.com/your-username/medallion-architecture.git
+ git clone https://github.com/Abdullah-K13/Medallion-Architecture.git
  cd medallion-architecture
 ```
 
@@ -100,11 +104,6 @@ python data_generator.py
 ## 📢 Contributing
 Want to contribute? Feel free to open an issue or submit a pull request! 🙌
 
-## 📜 License
-This project is licensed under the **MIT License**.
-
 ## 🔗 Connect with Me
-🚀 GitHub: [your-username](https://github.com/your-username)  
-💼 LinkedIn: [your-profile](https://linkedin.com/in/your-profile)  
-📧 Email: your-email@example.com
+📧 Email: abdullahk4803@gmail.com
 
