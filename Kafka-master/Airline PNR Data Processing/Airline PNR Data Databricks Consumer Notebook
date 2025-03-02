@@ -1,0 +1,102 @@
+# Databricks notebook source
+# MAGIC %python
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, FloatType
+from pyspark.sql.functions import col, from_json, window  # Added from_json import
+import random
+import time
+
+# Create Spark Session
+spark = SparkSession.builder \
+    .appName("Kafka Customer and PNR Stream") \
+    .getOrCreate()
+
+# Define schemas for customer and PNR data
+customer_schema = StructType([
+    StructField("customer_id", StringType(), True),
+    StructField("first_name", StringType(), True),
+    StructField("last_name", StringType(), True),
+    StructField("email", StringType(), True),
+    StructField("phone_number", StringType(), True),
+    StructField("passport_number", StringType(), True),
+    StructField("nationality", StringType(), True)
+])
+
+pnr_schema = StructType([
+    StructField("pnr_id", StringType(), True),
+    StructField("customer_id", StringType(), True),
+    StructField("flight_number", StringType(), True),
+    StructField("departure_airport", StringType(), True),
+    StructField("arrival_airport", StringType(), True),
+    StructField("departure_date", TimestampType(), True),
+    StructField("ticket_price", FloatType(), True),
+    StructField("seat_number", StringType(), True)
+])
+
+# Read customer data from Kafka topic
+customers_df = spark.readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "your_kafka_server:9092") \
+    .option("subscribe", "customer_topic") \
+    .load() \
+    .selectExpr("CAST(value AS STRING) as json") \
+    .select(from_json(col("json"), customer_schema).alias("data")) \
+    .select("data.*")
+
+# Read PNR data from Kafka topic
+pnr_df = spark.readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "your_kafka_server:9092") \
+    .option("subscribe", "pnr_topic") \
+    .load() \
+    .selectExpr("CAST(value AS STRING) as json") \
+    .select(from_json(col("json"), pnr_schema).alias("data")) \
+    .select("data.*")
+
+# Display the customer and PNR streams for debugging (optional)
+customer_query = customers_df.writeStream \
+    .outputMode("append") \
+    .format("console") \
+    .start()
+
+pnr_query = pnr_df.writeStream \
+    .outputMode("append") \
+    .format("console") \
+    .start()
+
+# Start processing streams and join customer and PNR data
+def process_streams():
+    while True:
+        # Wait for a little while to let streams initialize
+        time.sleep(5)
+
+        # Join customer data with PNR data
+        joined_df = pnr_df.join(customers_df, on='customer_id', how='inner')
+
+        # Sliding window aggregation on ticket_price (last 10 seconds, slide every 5 seconds)
+        sliding_window_df = joined_df.groupBy(
+            window("departure_date", "10 seconds", "5 seconds")
+        ).agg({"ticket_price": "sum"}).withColumnRenamed("sum(ticket_price)", "total_ticket_price")
+
+        # Tumbling window aggregation on ticket_price (10 seconds)
+        tumbling_window_df = joined_df.groupBy(
+            window("departure_date", "10 seconds")
+        ).agg({"ticket_price": "sum"}).withColumnRenamed("sum(ticket_price)", "total_ticket_price")
+
+        # Display the aggregated data
+        sliding_query = sliding_window_df.writeStream \
+            .outputMode("complete") \
+            .format("console") \
+            .start()
+
+        tumbling_query = tumbling_window_df.writeStream \
+            .outputMode("complete") \
+            .format("console") \
+            .start()
+
+        sliding_query.awaitTermination()
+        tumbling_query.awaitTermination()
+
+# Uncomment to start the processing
+# process_streams()

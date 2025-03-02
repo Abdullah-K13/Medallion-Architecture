@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<casino>
+    <users>
+        <user>
+            <user_id>1</user_id>
+            <username>john_doe</username>
+            <email>john.doe@example.com</email>
+            <password_hash>abc123xyz</password_hash>
+            <balance>250.75</balance>
+            <registration_date>2022-01-15T10:30:00</registration_date>
+            <status>active</status>
+        </user>
+        <user>
+            <user_id>2</user_id>
+            <username>jane_smith</username>
+            <email>jane.smith@example.com</email>
+            <password_hash>xyz456abc</password_hash>
+            <balance>800.00</balance>
+            <registration_date>2021-05-22T14:45:00</registration_date>
+            <status>suspended</status>
+        </user>
+    </users>
+    
+    <games>
+        <game>
+            <game_id>1</game_id>
+            <name>Lucky Slots</name>
+            <type>slot</type>
+            <min_bet>1.00</min_bet>
+            <max_bet>100.00</max_bet>
+            <provider>SpinTech</provider>
+        </game>
+        <game>
+            <game_id>2</game_id>
+            <name>Blackjack Royale</name>
+            <type>blackjack</type>
+            <min_bet>5.00</min_bet>
+            <max_bet>500.00</max_bet>
+            <provider>CardMasters</provider>
+        </game>
+    </games>
+    
+    <transactions>
+        <transaction>
+            <transaction_id>1</transaction_id>
+            <user_id>1</user_id>
+            <amount>500.00</amount>
+            <transaction_type>deposit</transaction_type>
+            <transaction_date>2023-09-01T10:15:00</transaction_date>
+            <game_id>1</game_id>
+            <status>completed</status>
+        </transaction>
+        <transaction>
+            <transaction_id>2</transaction_id>
+            <user_id>2</user_id>
+            <amount>50.00</amount>
+            <transaction_type>withdrawal</transaction_type>
+            <transaction_date>2023-09-02T11:00:00</transaction_date>
+            <game_id>2</game_id>
+            <status>pending</status>
+        </transaction>
+    </transactions>
+</casino>

@@ -1,0 +1,91 @@
+# Databricks notebook source
+# MAGIC %python
+# Import required libraries
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, FloatType
+import random
+import time
+
+# Create Spark Session
+spark = SparkSession.builder \
+    .appName("Single Customer View") \
+    .getOrCreate()
+
+# Function to create simulated customer data
+def create_customer_data():
+    customer_data = [
+        (1, "John", "Doe", "john.doe@example.com", "123-456-7890", "X12345678", "USA"),
+        (2, "Jane", "Smith", "jane.smith@example.com", "098-765-4321", "X98765432", "Canada"),
+        (3, "Alice", "Johnson", "alice.johnson@example.com", "555-555-5555", "X12312312", "UK"),
+        (4, "Bob", "Brown", "bob.brown@example.com", "666-666-6666", "X32132132", "Australia"),
+        (5, "Charlie", "Davis", "charlie.davis@example.com", "777-777-7777", "X65465465", "Germany")
+    ]
+    
+    # Define schema
+    columns = ["customer_id", "first_name", "last_name", "email", "phone_number", "passport_number", "nationality"]
+    
+    # Create DataFrame
+    return spark.createDataFrame(customer_data, schema=columns)
+
+# Load customer data from CRM
+customers_df = create_customer_data()
+
+# Display the customer data
+display(customers_df)
+
+# Function to create simulated PNR data
+def create_pnr_data():
+    departure_airports = ['JFK', 'LAX', 'ORD', 'LHR', 'DXB']
+    arrival_airports = ['LHR', 'DXB', 'JFK', 'LAX', 'ORD']
+    
+    pnr_data = []
+    for customer_id in range(1, 6):
+        pnr_id = f"{customer_id}-{random.randint(1, 5)}"
+        flight_number = f"{random.choice(['AA', 'DL', 'UA'])}{random.randint(100, 999)}"
+        departure_airport = random.choice(departure_airports)
+        arrival_airport = random.choice(arrival_airports)
+        departure_date = spark.sql("SELECT current_timestamp()").collect()[0][0]
+        ticket_price = round(random.uniform(100.0, 1500.0), 2)
+        seat_number = f"{random.randint(1, 30)}{random.choice('ABCDEF')}"
+        
+        pnr_data.append((pnr_id, customer_id, flight_number, departure_airport, arrival_airport, departure_date, ticket_price, seat_number))
+    
+    return pnr_data
+
+# Define schema for PNR records
+pnr_schema = StructType([
+    StructField("pnr_id", StringType(), True),
+    StructField("customer_id", StringType(), True),
+    StructField("flight_number", StringType(), True),
+    StructField("departure_airport", StringType(), True),
+    StructField("arrival_airport", StringType(), True),
+    StructField("departure_date", TimestampType(), True),
+    StructField("ticket_price", FloatType(), True),
+    StructField("seat_number", StringType(), True)
+])
+
+# Create an empty DataFrame to hold the streaming PNR data with defined schema
+pnr_df = spark.createDataFrame([], schema=pnr_schema)
+
+# Start streaming PNR data every second
+def stream_pnr_data():
+    global pnr_df  # Use the global variable to hold PNR data
+    while True:
+        # Generate new PNR records
+        new_pnr_data = create_pnr_data()
+        new_pnr_df = spark.createDataFrame(new_pnr_data, schema=pnr_schema)
+        
+        # Add the new PNR data to the existing DataFrame
+        pnr_df = pnr_df.union(new_pnr_df)
+
+        # Create a single customer view by joining PNR data with customer data
+        single_customer_view = pnr_df.join(customers_df, on='customer_id', how='inner')
+        
+        # Display the combined view
+        display(single_customer_view)
+        
+        # Sleep for 1 second
+        time.sleep(1)
+
+# Start the streaming process (uncomment to run)
+stream_pnr_data()

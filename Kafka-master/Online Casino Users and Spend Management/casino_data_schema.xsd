@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="casino">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="users" type="UsersType"/>
+                <xs:element name="games" type="GamesType"/>
+                <xs:element name="transactions" type="TransactionsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="UsersType">
+        <xs:sequence>
+            <xs:element name="user" maxOccurs="unbounded" type="UserType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="UserType">
+        <xs:sequence>
+            <xs:element name="user_id" type="xs:int"/>
+            <xs:element name="username" type="xs:string"/>
+            <xs:element name="email" type="xs:string"/>
+            <xs:element name="password_hash" type="xs:string"/>
+            <xs:element name="balance" type="xs:decimal"/>
+            <xs:element name="registration_date" type="xs:dateTime"/>
+            <xs:element name="status" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GamesType">
+        <xs:sequence>
+            <xs:element name="game" maxOccurs="unbounded" type="GameType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GameType">
+        <xs:sequence>
+            <xs:element name="game_id" type="xs:int"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="type" type="xs:string"/>
+            <xs:element name="min_bet" type="xs:decimal"/>
+            <xs:element name="max_bet" type="xs:decimal"/>
+            <xs:element name="provider" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TransactionsType">
+        <xs:sequence>
+            <xs:element name="transaction" maxOccurs="unbounded" type="TransactionType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TransactionType">
+        <xs:sequence>
+            <xs:element name="transaction_id" type="xs:int"/>
+            <xs:element name="user_id" type="xs:int"/>
+            <xs:element name="amount" type="xs:decimal"/>
+            <xs:element name="transaction_type" type="xs:string"/>
+            <xs:element name="transaction_date" type="xs:dateTime"/>
+            <xs:element name="game_id" type="xs:int"/>
+            <xs:element name="status" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

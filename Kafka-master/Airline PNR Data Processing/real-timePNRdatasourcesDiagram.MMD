@@ -1,0 +1,26 @@
+graph TD
+    A[Sources of Real-time PNR Data] -->|Airline Reservation Systems| A1[Sabre, Amadeus, Travelport]
+    A -->|Check-in Systems| A2[Web, Mobile App, Kiosk, Airport Counter]
+    A -->|Payment & Loyalty Programs| A3[Credit Cards, Points Redemption]
+    A -->|Flight Status APIs| A4[Weather Updates, Delays, Cancellations]
+    A -->|Third-party Vendors| A5[Travel Agencies, Meta-booking Platforms]
+
+    A1 --> B[Message Broker: Kafka/Kinesis/Event Hubs]
+    A2 --> B
+    A3 --> B
+    A4 --> B
+    A5 --> B
+
+    B --> C[Stream Processing: Spark Streaming]
+    C --> D[Data Validation & Cleansing]
+    D --> E[Data Enrichment]
+    E --> F[Real-Time Aggregation]
+
+    F --> G[Real-Time Storage: Delta table]
+    F --> H[Batch Storage: Data Lake ]
+    F --> I[Analytics Storage: Delta table]
+
+    G --> J[Real-Time Dashboards]
+    I --> J
+    G --> K[APIs for Downstream Systems]
+    G --> L[Machine Learning Models]

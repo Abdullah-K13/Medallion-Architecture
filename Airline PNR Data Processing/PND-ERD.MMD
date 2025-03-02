@@ -1,0 +1,65 @@
+erDiagram
+    gold_passenger_SCV {
+        string passenger_id PK
+        string passenger_name
+        string email
+        string phone
+        string address1
+        string address2
+        string city
+        string state
+        string country
+        string postal_code
+        date date_of_birth
+        string gender
+        string nationality
+        string passport_number
+        string frequent_flyer_number
+        string channel_used
+        string preferred_language
+        date created_date
+        date last_updated_date
+    }
+
+    gold_pnr_summary {
+        string pnr_id PK
+        string passenger_id FK
+        string passenger_name
+        string flight_id
+        string flight_number
+        string departure_city
+        string arrival_city
+        timestamp departure_date
+        timestamp arrival_date
+        decimal total_payment
+        string currency
+        timestamp booking_date
+        int loyalty_points
+        string status
+        string tier
+        string seat_preference
+        string meal_preference
+        boolean special_assistance
+        int baggage_count
+        decimal baggage_weight
+    }
+
+    gold_passenger_analytics {
+        string passenger_id PK, FK
+        int total_flights
+        int total_loyalty_points
+        decimal avg_payment_per_flight
+        string tier
+        string status
+        date last_flight_date
+        string preferred_departure_city
+        string preferred_arrival_city
+        decimal total_spent
+        string favorite_airline
+        decimal cancellation_rate
+        int upgrade_count
+        int companion_count
+    }
+
+    gold_passenger_SCV ||--o{ gold_pnr_summary : "1 to Many"
+    gold_passenger_SCV ||--|| gold_passenger_analytics : "1 to 1"
